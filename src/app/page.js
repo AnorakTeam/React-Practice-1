@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 function Square({ value, onSquareClick }) {
   return (
-    <button className="square" onClick={onSquareClick}>
+    <button className="square px-4 py-2 bg-blue-400 rounded text-white hover:bg-blue-600" onClick={onSquareClick}>
       {value}
     </button>
   );
@@ -12,7 +12,7 @@ function Square({ value, onSquareClick }) {
 
 function Board({ xIsNext, squares, onPlay }) {
   function handleClick(i) {
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares) || squares[i] !== "-") {
       return;
     }
     const nextSquares = squares.slice();
@@ -34,28 +34,31 @@ function Board({ xIsNext, squares, onPlay }) {
 
   return (
     <>
+      <div className='flex flex-col justify-center items-center'>
+
       <div className="status">{status}</div>
-      <div className="board-row">
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
+        <div className="board-row">
+            <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
+            <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
+            <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
+        </div>
+        <div className="board-row">
+            <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
+            <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
+            <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
+        </div>
+        <div className="board-row">
+            <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
+            <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
+            <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
+        </div>
       </div>
     </>
   );
 }
 
 export default function Game() {
-  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [history, setHistory] = useState([Array(9).fill("-")]);
   const [currentMove, setCurrentMove] = useState(0);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
@@ -78,21 +81,32 @@ export default function Game() {
       description = 'Go to game start';
     }
     return (
-      <li key={move}>
+      <li key={move} className='px-4 py-2 bg-amber-200 text-black rounded hover:bg-amber-800'>
         <button onClick={() => jumpTo(move)}>{description}</button>
       </li>
     );
   });
 
   return (
-    <div className="game">
-      <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
-      </div>
-      <div className="game-info">
-        <ol>{moves}</ol>
-      </div>
-    </div>
+    <>
+    <main className='flex flex-col justify-around items-center h-screen bg-gradient-to-tr from-blue-300 to-purple-400'>
+        <section className='flex flex-col items-center'>
+            <p className='text-4xl mt-10'>Tic tac toe demo with React and Tailwind</p>
+            <p className='text-2xl'>by josemanuelpr@ufps.edu.co</p>
+        </section>
+
+        <section className='flex flex-row items-center justify-center'>
+            <div className="game">
+                <div className="game-board">
+                    <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+                </div>
+                <div className="game-info">
+                    <ol className='flex flex-col items-center justify-center'>{moves}</ol>
+                </div>
+            </div>
+        </section>
+    </main>
+    </>
   );
 }
 
@@ -107,9 +121,13 @@ function calculateWinner(squares) {
     [0, 4, 8],
     [2, 4, 6],
   ];
+
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+    if (squares[a] && 
+      squares[a] === squares[b] && 
+      squares[a] === squares[c] &&
+      (squares[a] !== "-" && squares[b] !== "-" && squares[c] !== "-")) {
       return squares[a];
     }
   }
